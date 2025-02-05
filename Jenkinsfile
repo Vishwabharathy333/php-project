@@ -10,7 +10,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $USER/vishwabharathy:latest ."
+                    sh "docker build -t $USER/vishwabharathy/php-project:latest ."
                     sh "docker images"
                 }
             }
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh "docker push $USER/vishwabharathy:latest"
+                    sh "docker push $USER/vishwabharathy/php-project:latest"
                 }
             }
         }
