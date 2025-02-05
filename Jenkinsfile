@@ -10,7 +10,7 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t vishwabharathy:latest .'
+                    sh 'docker build -t $USER/vishwabharathy:latest .'
                     sh 'docker images'
                 }
             }
@@ -19,7 +19,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh 'docker push vishwabharathy'
+                    sh 'docker push $USER/vishwabharathy:latest'
+
                 }
             }
         }
@@ -28,8 +29,8 @@ pipeline {
             steps {
                script {
                    def dockerrm = 'sudo docker rm -f My-first-containe2211 || true'
-                    def dockerCmd = 'sudo docker run -itd --name My-first-containe2211 -p 8083:80 vishwabharathy'
-                    sshagent(['sshkeypair']) {
+                   def dockerCmd = 'sudo docker run -itd --name My-first-containe2211 -p 8083:80 $USER/vishwabharathy:latest'
+                   sshagent(['sshkeypair']) {
                         //chnage the private ip in below code
                         // sh "docker run -itd --name My-first-containe2111 -p 8083:80 akshu20791/2febimg:v1"
                          sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.2.175 ${dockerrm}"
