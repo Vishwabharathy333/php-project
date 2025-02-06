@@ -10,32 +10,36 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t $USER/vishwabharathy:latest .'
+                    sh 'docker build -t vishwabharathy/2febimg : v1 .'
                     sh 'docker images'
                 }
             }
         }
         stage('Docker Login & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'vishwabharathy', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh "docker push $USER/vishwabharathy:latest"
+                    sh "docker push vishwabharathy/2febimg: v1"
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    def dockerrm = "sudo docker rm -f My-first-containe2211 || true"
-                    def dockerCmd = "sudo docker run -itd --name My-first-containe2211 -p 8083:80 $USER/vishwabharathy:latest"
-                    
+               script {
+                   def dockerrm = 'sudo docker rm -f My-first-containe2211 || true'
+                    def dockerCmd = 'sudo docker run -itd --name My-first-containe2211 -p 8083:80 akshu20791/akshatnewimg6july:v1'
                     sshagent(['sshkeypair']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.2.175 ${dockerrm}"
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@172.31.2.175 ${dockerCmd}"
+                        //chnage the private ip in below code
+                        // sh "docker run -itd --name My-first-containe2111 -p 8083:80 akshu20791/2febimg:v1"
+                         sh "ssh -o StrictHostKeyChecking=no ubuntu@3.109.144.254 ${dockerrm}"
+                         sh "ssh -o StrictHostKeyChecking=no ubuntu@3.109.144.254 ${dockerCmd}"
                     }
                 }
             }
         }
+    }
+}
+
     }
 }
